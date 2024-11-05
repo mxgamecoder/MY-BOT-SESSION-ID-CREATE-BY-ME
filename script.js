@@ -1,0 +1,62 @@
+// Show QR code option
+function showQRCode() {
+    document.getElementById('phoneInput').style.display = 'none';
+        document.getElementById('pairCodeButton').style.display = 'none';
+            document.getElementById('qrCodeImage').style.display = 'block';
+                document.getElementById('qrCodeImage').innerText = 'Loading QR Code...';
+
+                    // Fetch QR code from the server
+                        fetch('/generate-qr')
+                                .then(response => response.json())
+                                        .then(data => {
+                                                    if (data.qrCode) {
+                                                                    // Display the QR code image
+                                                                                    document.getElementById('qrCodeImage').innerHTML = `<img src="${data.qrCode}" alt="QR Code" />`;
+                                                                                                } else {
+                                                                                                                document.getElementById('qrCodeImage').innerText = 'Failed to load QR Code.';
+                                                                                                                            }
+                                                                                                                                    })
+                                                                                                                                            .catch(error => {
+                                                                                                                                                        console.error('Error:', error);
+                                                                                                                                                                    document.getElementById('qrCodeImage').innerText = 'Error loading QR Code.';
+                                                                                                                                                                            });
+                                                                                                                                                                            }
+
+                                                                                                                                                                            // Show pairing code input option
+                                                                                                                                                                            function showPairCodeInput() {
+                                                                                                                                                                                document.getElementById('phoneInput').style.display = 'block';
+                                                                                                                                                                                    document.getElementById('pairCodeButton').style.display = 'inline-block';
+                                                                                                                                                                                        document.getElementById('qrCodeImage').style.display = 'none';
+                                                                                                                                                                                        }
+
+                                                                                                                                                                                        // Handle pairing code connection
+                                                                                                                                                                                        function connectWithPairCode() {
+                                                                                                                                                                                            const phoneNumber = document.getElementById('phoneInput').value;
+
+                                                                                                                                                                                                if (!phoneNumber) {
+                                                                                                                                                                                                        alert('Please enter your phone number.');
+                                                                                                                                                                                                                return;
+                                                                                                                                                                                                                    }
+
+                                                                                                                                                                                                                        // Send request to server to generate pairing code
+                                                                                                                                                                                                                            fetch('/generate-pairing-code', {
+                                                                                                                                                                                                                                    method: 'POST',
+                                                                                                                                                                                                                                            headers: {
+                                                                                                                                                                                                                                                        'Content-Type': 'application/json',
+                                                                                                                                                                                                                                                                },
+                                                                                                                                                                                                                                                                        body: JSON.stringify({ phoneNumber: phoneNumber })
+                                                                                                                                                                                                                                                                            })
+                                                                                                                                                                                                                                                                                .then(response => response.json())
+                                                                                                                                                                                                                                                                                    .then(data => {
+                                                                                                                                                                                                                                                                                            if (data.pairingCode) {
+                                                                                                                                                                                                                                                                                                        // Display the pairing code
+                                                                                                                                                                                                                                                                                                                    alert(`Your Pairing Code: ${data.pairingCode}`);
+                                                                                                                                                                                                                                                                                                                            } else {
+                                                                                                                                                                                                                                                                                                                                        alert('Failed to generate pairing code.');
+                                                                                                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                                                                                                                    })
+                                                                                                                                                                                                                                                                                                                                                        .catch(error => {
+                                                                                                                                                                                                                                                                                                                                                                console.error('Error:', error);
+                                                                                                                                                                                                                                                                                                                                                                        alert('Error generating pairing code.');
+                                                                                                                                                                                                                                                                                                                                                                            });
+                                                                                                                                                                                                                                                                                                                                                                            }
